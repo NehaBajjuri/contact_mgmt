@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Typography, Button } from '@mui/material';
-import axios from 'axios'; // Import axios
-import './App.css'
+import axios from 'axios'; 
 import EditContact from './components/EditContact';
 import ContactTable from './components/ContactTable'; 
 
@@ -17,7 +16,7 @@ const App = () => {
       const response = await axios.get('http://localhost:5000/contacts');
       setContacts(response.data.map(contact => ({
         ...contact,
-        id: contact._id,  // MongoDB provides _id by default
+        id: contact._id, 
       })));
       
     } catch (error) {
@@ -37,7 +36,7 @@ const App = () => {
   };
 
   const handleEditContact = (contact) => {
-    setCurrentContact(contact); // Pass selected contact to edit
+    setCurrentContact(contact); 
     setIsDialogOpen(true);
   };
 
@@ -45,7 +44,7 @@ const App = () => {
     try {
       await axios.delete(`http://localhost:5000/contacts/${id}`);
       setContacts(contacts.filter((contact) => contact._id !== id));
-      console.log(contacts); // Add this line after setContacts
+      console.log(contacts); 
 
     } catch (error) {
       console.error('Error deleting contact:', error);
@@ -60,15 +59,20 @@ const App = () => {
           `http://localhost:5000/contacts/${currentContact._id}`, // Use _id for the update
           contactData
         );
-                setContacts(
-                  contacts.map((contact) =>
-                    contact._id === currentContact._id ? updatedContact.data : contact
-                  )
+        setContacts((prevContacts) =>
+          prevContacts
+            .map((contact) =>
+              contact.id === currentContact.id ? { ...currentContact, ...contactData } : contact
+            )
+            .sort((a, b) => a.firstName.localeCompare(b.firstName))
         );
       } else {
         // Add new contact (POST request)
         const response = await axios.post('http://localhost:5000/contacts', contactData);
-        setContacts([...contacts, response.data]); // Add the new contact returned from the API
+        setContacts((prevContacts) =>
+          [...prevContacts, { id: Date.now(), ...contactData }]
+            .sort((a, b) => a.firstName.localeCompare(b.firstName)) 
+        ); 
       }
     } catch (error) {
       console.error('Error saving contact:', error);
