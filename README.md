@@ -39,7 +39,14 @@ const contactSchema = new mongoose.Schema({
   company: String,
   jobTitle: String,
 });
----
+
+ 
+
+
+
+
+
+**IMAGES OF PROJECT**
 
 
 ![image](https://github.com/user-attachments/assets/cb41be2f-34f0-48d7-9fb8-8c898fccf802)
