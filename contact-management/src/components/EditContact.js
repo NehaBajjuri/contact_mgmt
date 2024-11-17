@@ -18,6 +18,7 @@ const EditContactDialog = ({ open, handleClose, contact={}, handleUpdate }) => {
     company: contact?.company || '',
     jobTitle: contact?.jobTitle || '',
   });
+  const [errors, setErrors] = useState({});
   useEffect(() => {
     if (open && contact) {
       setFormData({
@@ -29,23 +30,36 @@ const EditContactDialog = ({ open, handleClose, contact={}, handleUpdate }) => {
         jobTitle: contact.jobTitle || '',
       });
     }
+    setErrors({});
   }, [open, contact]);
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required.';
+    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required.';
+    if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email))
+      newErrors.email = 'Enter a valid email.';
+    if (!formData.phoneNumber.trim() || !/^\d{10}$/.test(formData.phoneNumber))
+      newErrors.phoneNumber = 'Enter a valid 10-digit phone number.';
+    if (!formData.company.trim()) newErrors.company = 'Company name is required.';
+    if (!formData.jobTitle.trim()) newErrors.jobTitle = 'Job title is required.';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = () => {
-    const { firstName, lastName, email, phoneNumber } = formData;
-
-    // Basic validation
-    if (!firstName || !lastName || !email || !phoneNumber) {
-      alert('All fields except Company and Job Title are required!');
-      return;
-    }
+ if (validate()) {
 
     handleUpdate(formData);
     handleClose();
+ }
   };
 
   return (
@@ -60,6 +74,8 @@ const EditContactDialog = ({ open, handleClose, contact={}, handleUpdate }) => {
           fullWidth
           margin="normal"
           required
+          error={!!errors.firstName}
+          helperText={errors.firstName}
         />
         <TextField
           name="lastName"
@@ -69,6 +85,8 @@ const EditContactDialog = ({ open, handleClose, contact={}, handleUpdate }) => {
           fullWidth
           margin="normal"
           required
+          error={!!errors.lastName}
+          helperText={errors.lastName}
         />
         <TextField
           name="email"
@@ -79,6 +97,8 @@ const EditContactDialog = ({ open, handleClose, contact={}, handleUpdate }) => {
           fullWidth
           margin="normal"
           required
+          error={!!errors.email}
+          helperText={errors.email}
         />
         <TextField
           name="phoneNumber"
@@ -88,6 +108,8 @@ const EditContactDialog = ({ open, handleClose, contact={}, handleUpdate }) => {
           fullWidth
           margin="normal"
           required
+          error={!!errors.phoneNumber}
+          helperText={errors.phoneNumber}
         />
         <TextField
           name="company"
